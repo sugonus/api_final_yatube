@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from posts.models import Post, Group
 from .serializers import (
     PostSerializer,
@@ -40,7 +40,13 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, post=post)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class CreateListMixin(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
+    pass
+
+
+class FollowViewSet(CreateListMixin):
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.SearchFilter,)
